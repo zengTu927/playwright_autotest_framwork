@@ -1,0 +1,25 @@
+env: test
+test:
+    base_url: "http://mall.lemonban.com/admin/#/login"
+    username: "test123"
+    password: "123456"
+    validate_code: "lemon"
+
+prod:
+    base_url: "https://tool.liumingye.cn/"
+    username: "test123"
+    password: "123456"
+
+browser:
+    type: "chromium"
+    headless: true
+    timeout: 5000
+    viewport:
+      width: 1920
+      height: 1080
+
+report:
+    screenshot_dir:  "reports/screenshots"
+    trace_dir: "reports/traces"
+    video_dir: "reports/videos"
+    allure_results_dir: "reports/allure-results"

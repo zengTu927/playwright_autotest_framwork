@@ -1,0 +1,21 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Reports
+reports/allure-results/
+reports/allure-report/
+reports/screenshots/
+reports/traces/
+reports/videos/
+reports/logs/
+reports/playwright-output/
+
+# IDE
+.idea/
+.vscode/
+
+# System
+.DS_Store
