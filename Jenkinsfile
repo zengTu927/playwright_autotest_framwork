@@ -42,13 +42,26 @@ pipeline {
         stage('Prepare Environment') {
             steps {
                 sh '''
+                    export JAVA_HOME="/opt/homebrew/opt/openjdk@21"
+                    export PATH="$JAVA_HOME/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+                    echo "系统 python3:"
+                    which python3
+                    python3 --version
+
+                    rm -rf .venv
+
                     python3 -m venv .venv
                     . .venv/bin/activate
 
-                    python -m pip install --upgrade pip
-                    pip install -r requirements.txt
+                    echo "虚拟环境 Python:"
+                    which python
+                    python --version
 
-                    python -m playwright install ${BROWSER}
+                    python -m pip install --upgrade pip
+                    python -m pip install -r requirements.txt
+
+                    python -m playwright install chromium firefox webkit
                 '''
             }
         }
@@ -56,12 +69,35 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
+                    export JAVA_HOME="/opt/homebrew/opt/openjdk@21"
+                    export PATH="$JAVA_HOME/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
                     . .venv/bin/activate
 
-                    pytest \
+                    echo "运行测试使用的 Python:"
+                    which python
+                    python --version
+
+                    echo "pytest 来源:"
+                    which pytest
+                    python -m pytest --version
+
+                    BROWSER_ARGS=""
+                    IFS=',' read -ra BROWSER_LIST <<< "${BROWSERS}"
+
+                    for browser in "${BROWSER_LIST[@]}"; do
+                        BROWSER_ARGS="$BROWSER_ARGS --browser $browser"
+                    done
+
+                    echo "测试环境: ${TEST_ENV}"
+                    echo "测试标签: ${TEST_MARK}"
+                    echo "浏览器参数: $BROWSER_ARGS"
+                    echo "重试次数: ${RERUNS}"
+
+                    python -m pytest \
                       -m "${TEST_MARK}" \
                       --env "${TEST_ENV}" \
-                      --browser "${BROWSER}" \
+                      $BROWSER_ARGS \
                       --reruns "${RERUNS}" \
                       --reruns-delay 2
                 '''
