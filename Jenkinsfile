@@ -93,7 +93,17 @@ pipeline {
                     echo "测试标签: ${TEST_MARK}"
                     echo "浏览器参数: $BROWSER_ARGS"
                     echo "重试次数: ${RERUNS}"
+                    mkdir -p reports/allure-results
 
+                    cat > reports/allure-results/environment.properties <<EOF
+                    TEST_ENV=${TEST_ENV}
+                    TEST_MARK=${TEST_MARK}
+                    BROWSERS=${BROWSERS}
+                    RERUNS=${RERUNS}
+                    BUILD_NUMBER=${BUILD_NUMBER}
+                    JOB_NAME=${JOB_NAME}
+                    PYTHON_VERSION=$(python --version)
+                    EOF
                     python -m pytest \
                       -m "${TEST_MARK}" \
                       --env "${TEST_ENV}" \
