@@ -122,7 +122,7 @@ pipeline {
 
                 sh """
                     export JAVA_HOME="/opt/homebrew/opt/openjdk@21"
-                    export PATH="\\$JAVA_HOME/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:\\$PATH"
+                    export PATH="$JAVA_HOME/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
                     . .venv/bin/activate
 
