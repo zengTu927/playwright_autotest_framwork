@@ -128,7 +128,7 @@ pipeline {
                         if [ -d ".venv" ]; then
                             . .venv/bin/activate
 
-                            python -m common/lark.py \
+                            python -m common/lark \
                               --webhook "$FEISHU_WEBHOOK" \
                               --job-name "$JOB_NAME" \
                               --build-number "$BUILD_NUMBER" \
