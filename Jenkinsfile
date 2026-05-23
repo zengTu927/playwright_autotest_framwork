@@ -59,8 +59,7 @@ pipeline {
                     which python
                     python --version
 
-                    python -m pip install --upgrade pip
-                    python -m pip install -r requirements.txt
+                    python -m pip install -r requirements.txt -i https://pypi.org/simple
 
                     python -m playwright install chromium firefox webkit
                 '''
