@@ -120,24 +120,30 @@ pipeline {
             script {
                 def buildStatus = currentBuild.currentResult ?: 'UNKNOWN'
 
-                sh """
-                    export JAVA_HOME="/opt/homebrew/opt/openjdk@21"
-                    export PATH="$JAVA_HOME/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+                withEnv(["BUILD_STATUS=${buildStatus}"]) {
+                    sh '''
+                        export JAVA_HOME="/opt/homebrew/opt/openjdk@21"
+                        export PATH="$JAVA_HOME/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
-                    . .venv/bin/activate
+                        if [ -d ".venv" ]; then
+                            . .venv/bin/activate
 
-                    python common/feishu_notice.py \\
-                      --webhook "${FEISHU_WEBHOOK}" \\
-                      --job-name "${JOB_NAME}" \\
-                      --build-number "${BUILD_NUMBER}" \\
-                      --build-status "${buildStatus}" \\
-                      --test-env "${TEST_ENV}" \\
-                      --test-mark "${TEST_MARK}" \\
-                      --browsers "${BROWSERS}" \\
-                      --reruns "${RERUNS}" \\
-                      --build-url "${BUILD_URL}" \\
-                      --allure-url "${BUILD_URL}allure/"
-                """
+                            python common/feishu_notice.py \
+                              --webhook "$FEISHU_WEBHOOK" \
+                              --job-name "$JOB_NAME" \
+                              --build-number "$BUILD_NUMBER" \
+                              --build-status "$BUILD_STATUS" \
+                              --test-env "$TEST_ENV" \
+                              --test-mark "$TEST_MARK" \
+                              --browsers "$BROWSERS" \
+                              --reruns "$RERUNS" \
+                              --build-url "$BUILD_URL" \
+                              --allure-url "${BUILD_URL}allure/"
+                        else
+                            echo ".venv 不存在，跳过飞书通知"
+                        fi
+                    '''
+                }
             }
         }
     }
