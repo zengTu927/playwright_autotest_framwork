@@ -135,7 +135,7 @@ pipeline {
                               --build-status "$BUILD_STATUS" \
                               --test-env "$TEST_ENV" \
                               --test-mark "$TEST_MARK" \
-                              --browsers "$BROWSERS" \
+                              --browsers "$BROWSER" \
                               --reruns "$RERUNS" \
                               --build-url "$BUILD_URL" \
                               --allure-url "${BUILD_URL}allure/"
