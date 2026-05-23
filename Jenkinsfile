@@ -30,7 +30,7 @@ pipeline {
     environment {
     PYTHONUNBUFFERED = '1'
     ALLURE_RESULTS_DIR = 'reports/allure-results'
-    FEISHU_WEBHOOK = credentials('lark-webhook')
+    FEISHU_WEBHOOK = credentials('lark_webhook')
 }
 
     stages {
