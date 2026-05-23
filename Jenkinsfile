@@ -28,9 +28,10 @@ pipeline {
     }
 
     environment {
-        PYTHONUNBUFFERED = '1'
-        ALLURE_RESULTS_DIR = 'reports/allure-results'
-    }
+    PYTHONUNBUFFERED = '1'
+    ALLURE_RESULTS_DIR = 'reports/allure-results'
+    FEISHU_WEBHOOK = credentials('feishu-webhook')
+}
 
     stages {
         stage('Checkout') {
@@ -116,6 +117,29 @@ pipeline {
                 allowEmptyArchive: true,
                 fingerprint: true
             )
+
+            script {
+                def buildStatus = currentBuild.currentResult ?: 'UNKNOWN'
+
+                sh """
+                    export JAVA_HOME="/opt/homebrew/opt/openjdk@21"
+                    export PATH="\\$JAVA_HOME/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:\\$PATH"
+
+                    . .venv/bin/activate
+
+                    python common/feishu_notice.py \\
+                      --webhook "${FEISHU_WEBHOOK}" \\
+                      --job-name "${JOB_NAME}" \\
+                      --build-number "${BUILD_NUMBER}" \\
+                      --build-status "${buildStatus}" \\
+                      --test-env "${TEST_ENV}" \\
+                      --test-mark "${TEST_MARK}" \\
+                      --browsers "${BROWSERS}" \\
+                      --reruns "${RERUNS}" \\
+                      --build-url "${BUILD_URL}" \\
+                      --allure-url "${BUILD_URL}allure/"
+                """
+            }
         }
     }
 }
