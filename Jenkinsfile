@@ -128,7 +128,7 @@ pipeline {
                         if [ -d ".venv" ]; then
                             . .venv/bin/activate
 
-                            python common/lark.py \
+                            python -m common/lark.py \
                               --webhook "$FEISHU_WEBHOOK" \
                               --job-name "$JOB_NAME" \
                               --build-number "$BUILD_NUMBER" \
@@ -138,7 +138,7 @@ pipeline {
                               --browsers "$BROWSER" \
                               --reruns "$RERUNS" \
                               --build-url "$BUILD_URL" \
-                              --allure-url "${BUILD_URL}allure/"
+                              --allure-url "${BUILD_URL}allure/" \
                               --allure-results-dir "reports/allure-results"
                         else
                             echo ".venv 不存在，跳过飞书通知"
