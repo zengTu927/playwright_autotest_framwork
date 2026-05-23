@@ -17,7 +17,7 @@ class LoginPage(BasePage):
 
     def open_login_page(self,base_url:str):
         self.open(base_url)
-        self.wait_for_page_status(status="load")
+        self.wait_for_page_status(status="load",timeout=60000)
         self.expect_text(self.login_page_title_selector,"L-mall4后台")
 
     def login(self,username:str,password:str,validate_code:str="lemon"):
