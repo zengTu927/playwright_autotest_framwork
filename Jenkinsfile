@@ -139,6 +139,7 @@ pipeline {
                               --reruns "$RERUNS" \
                               --build-url "$BUILD_URL" \
                               --allure-url "${BUILD_URL}allure/"
+                              --allure-results-dir "reports/allure-results"
                         else
                             echo ".venv 不存在，跳过飞书通知"
                         fi

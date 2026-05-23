@@ -4,6 +4,8 @@ from typing import Optional
 
 import requests
 
+from common.allure_result_parser import parse_allure_results
+
 
 def send_feishu_text(webhook: str, content: str) -> None:
     """
@@ -38,6 +40,24 @@ def send_feishu_text(webhook: str, content: str) -> None:
         raise RuntimeError(f"飞书通知发送失败：{result}")
 
 
+def format_case_list(title: str, cases: list[str], max_count: int = 10) -> str:
+    """
+    格式化失败/异常/跳过用例列表
+    """
+    if not cases:
+        return ""
+
+    lines = [f"\n{title}："]
+
+    for index, case_name in enumerate(cases[:max_count], start=1):
+        lines.append(f"{index}. {case_name}")
+
+    if len(cases) > max_count:
+        lines.append(f"... 还有 {len(cases) - max_count} 条未展示")
+
+    return "\n".join(lines)
+
+
 def build_message(
     job_name: str,
     build_number: str,
@@ -47,12 +67,22 @@ def build_message(
     browsers: str,
     reruns: str,
     build_url: str,
-    allure_url: Optional[str] = None,
+    allure_url: Optional[str],
+    allure_results_dir: str,
 ) -> str:
     """
     构建飞书通知文本
     """
-    status_icon = "✅" if build_status == "SUCCESS" else "❌"
+    stats = parse_allure_results(allure_results_dir)
+
+    if build_status == "SUCCESS":
+        status_icon = "✅"
+    elif build_status == "FAILURE":
+        status_icon = "❌"
+    elif build_status == "UNSTABLE":
+        status_icon = "⚠️"
+    else:
+        status_icon = "ℹ️"
 
     message = f"""UI 自动化测试通知
 
@@ -63,6 +93,22 @@ def build_message(
 测试标签：{test_mark}
 浏览器：{browsers}
 失败重试：{reruns}
+
+测试结果：
+总数：{stats["total"]}
+通过：{stats["passed"]}
+失败：{stats["failed"]}
+异常：{stats["broken"]}
+跳过：{stats["skipped"]}
+未知：{stats["unknown"]}
+通过率：{stats["pass_rate"]}
+"""
+
+    message += format_case_list("失败用例", stats["failed_cases"])
+    message += format_case_list("异常用例", stats["broken_cases"])
+    message += format_case_list("跳过用例", stats["skipped_cases"])
+
+    message += f"""
 
 Jenkins 构建：
 {build_url}
@@ -90,6 +136,12 @@ def main():
     parser.add_argument("--reruns", required=True, help="失败重试次数")
     parser.add_argument("--build-url", required=True, help="Jenkins 构建地址")
     parser.add_argument("--allure-url", required=False, default="", help="Allure 报告地址")
+    parser.add_argument(
+        "--allure-results-dir",
+        required=False,
+        default="reports/allure-results",
+        help="Allure 结果目录",
+    )
 
     args = parser.parse_args()
 
@@ -103,6 +155,7 @@ def main():
         reruns=args.reruns,
         build_url=args.build_url,
         allure_url=args.allure_url,
+        allure_results_dir=args.allure_results_dir,
     )
 
     send_feishu_text(args.webhook, message)
