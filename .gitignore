@@ -19,3 +19,6 @@ reports/playwright-output/
 
 # System
 .DS_Store
+
+#playwight
+playwright/.auth/

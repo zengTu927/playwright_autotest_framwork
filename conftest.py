@@ -12,6 +12,7 @@ from pages.login_page import LoginPage
 from common.file_finder import find_latest_file
 from common.file_utils import safe_file_name,ensure_dir,clean_directory
 
+
 def pytest_addoption(parser):
     parser.addoption("--env",action="store",default=None,help="指定运行环境")
 
@@ -249,6 +250,8 @@ def pytest_sessionstart(session):
     :param session:
     :return:
     """
+    if hasattr(session.config, "workerinput"):
+        return
     clean_directory("reports/allure-results")
     clean_directory("reports/screenshots")
     clean_directory("reports/traces")

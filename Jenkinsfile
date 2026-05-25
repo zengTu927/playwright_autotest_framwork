@@ -10,14 +10,14 @@ pipeline {
 
         string(
             name: 'TEST_MARK',
-            defaultValue: 'smoke',
+            defaultValue: 'all',
             description: 'pytest marker 表达式，例如：smoke、login、smoke and login'
         )
 
-        choice(
-            name: 'BROWSER',
-            choices: ['chromium', 'firefox', 'webkit'],
-            description: '选择浏览器'
+        string(
+            name: 'BROWSERS',
+            defaultValue: 'chromium',
+            description: '浏览器，多个用逗号分隔，例如：chromium,firefox,webkit'
         )
 
         string(
@@ -25,6 +25,14 @@ pipeline {
             defaultValue: '1',
             description: '失败重试次数'
         )
+
+        string(
+            name: 'WORKERS',
+            defaultValue: '2',
+            description: '并行 worker 数量，例如：1、2、4、auto。1 表示不并行'
+        )
+
+
     }
 
     environment {
@@ -94,12 +102,22 @@ pipeline {
                     echo "浏览器参数: $BROWSER_ARGS"
                     echo "重试次数: ${RERUNS}"
 
-                    python -m pytest \
-                      -m "${TEST_MARK}" \
-                      --env "${TEST_ENV}" \
-                      $BROWSER_ARGS \
-                      --reruns "${RERUNS}" \
-                      --reruns-delay 2
+                    if [ "${TEST_MARK}" = "all" ]; then
+                        python -m pytest \
+                          -n "${WORKERS}" \
+                          --env "${TEST_ENV}" \
+                          --browser "${BROWSER}" \
+                          --reruns "${RERUNS}" \
+                          --reruns-delay 2
+                    else
+                        python -m pytest \
+                          -n "${WORKERS}" \
+                          -m "${TEST_MARK}" \
+                          --env "${TEST_ENV}" \
+                          --browser "${BROWSER}" \
+                          --reruns "${RERUNS}" \
+                          --reruns-delay 2
+                    fi
                 '''
             }
         }
@@ -135,7 +153,7 @@ pipeline {
                               --build-status "$BUILD_STATUS" \
                               --test-env "$TEST_ENV" \
                               --test-mark "$TEST_MARK" \
-                              --browsers "$BROWSER" \
+                              --browsers "$BROWSERS" \
                               --reruns "$RERUNS" \
                               --build-url "$BUILD_URL" \
                               --allure-url "${BUILD_URL}allure/" \

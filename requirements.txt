@@ -5,3 +5,4 @@ allure-pytest
 pytest-rerunfailures
 PyYAML
 requests
+pytest-xdist
