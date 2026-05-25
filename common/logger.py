@@ -1,4 +1,5 @@
 
+import os
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -18,7 +19,8 @@ class Logger:
         log_dir.mkdir(parents=True, exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_file = log_dir / f"run_{timestamp}.log"
+        worker_id = os.environ.get("PYTEST_XDIST_WORKER", "main")
+        log_file = log_dir / f"run_{worker_id}_{timestamp}.log"
 
         formatter = logging.Formatter(
             fmt="%(asctime)s | %(levelname)-8s | %(filename)s:%(lineno)d | %(message)s",
