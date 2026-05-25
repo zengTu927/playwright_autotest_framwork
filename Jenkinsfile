@@ -106,7 +106,7 @@ pipeline {
                         python -m pytest \
                           -n "${WORKERS}" \
                           --env "${TEST_ENV}" \
-                          --browser "${BROWSER}" \
+                          $BROWSER_ARGS \
                           --reruns "${RERUNS}" \
                           --reruns-delay 2
                     else
@@ -114,7 +114,7 @@ pipeline {
                           -n "${WORKERS}" \
                           -m "${TEST_MARK}" \
                           --env "${TEST_ENV}" \
-                          --browser "${BROWSER}" \
+                          $BROWSER_ARGS \
                           --reruns "${RERUNS}" \
                           --reruns-delay 2
                     fi
