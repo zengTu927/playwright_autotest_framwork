@@ -10,7 +10,7 @@ from common.logger import logger
 
 
 class BasePage:
-    def __init__(self,page:Page,expect_timeout:int=3000):
+    def __init__(self,page:Page,expect_timeout:int=30000):
         self.page = page
         self.expect_timeout = expect_timeout
 

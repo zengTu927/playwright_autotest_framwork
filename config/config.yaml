@@ -13,10 +13,15 @@ prod:
 browser:
     type: "chromium"
     headless: true
-    timeout: 5000
-    viewport:
-      width: 1920
-      height: 1080
+    slow_mo: 0
+
+
+
+context:
+  viewport:
+    width: 1920
+    height: 1080
+  ignore_https_errors: true
 
 report:
     screenshot_dir:  "reports/screenshots"

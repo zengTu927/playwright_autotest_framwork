@@ -81,7 +81,8 @@ pipeline {
                     export PATH="$JAVA_HOME/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
                     . .venv/bin/activate
-
+                    rm -rf reports/logs
+                    mkdir -p reports/logs
                     echo "运行测试使用的 Python:"
                     which python
                     python --version

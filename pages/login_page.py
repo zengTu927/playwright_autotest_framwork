@@ -7,8 +7,8 @@ from pages.base_page import BasePage
 
 
 class LoginPage(BasePage):
-    def __init__(self,page:Page):
-        super().__init__( page)
+    def __init__(self,page:Page,expect_timeout:int=30000):
+        super().__init__( page,expect_timeout)
         self.login_page_title_selector = page.get_by_text("L-mall4后台")
         self.username_selector = page.get_by_role("textbox", name="用户名")
         self.password_selector = page.get_by_role("textbox", name="密码")
@@ -25,4 +25,5 @@ class LoginPage(BasePage):
         self.fill(self.password_selector,password)
         self.fill(self.validate_code_selector,validate_code)
         self.click(self.login_button_selector)
+
 
