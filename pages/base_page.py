@@ -10,8 +10,9 @@ from common.logger import logger
 
 
 class BasePage:
-    def __init__(self,page:Page):
+    def __init__(self,page:Page,expect_timeout:int=3000):
         self.page = page
+        self.expect_timeout = expect_timeout
 
     def _get_locator(self,target:Union[str,Locator]) -> Locator:
         """
@@ -61,32 +62,32 @@ class BasePage:
             locator = self._get_locator(target)
             return locator.is_visible()
 
-    def expect_visible(self,target:Union[str,Locator],timeout:int=3000):
+    def expect_visible(self,target:Union[str,Locator]):
         """等待元素可见"""
         with allure.step(f"等待元素可见：{target}"):
             logger.info(f"等待元素可见：{target}")
             locator = self._get_locator(target)
-            expect(locator).to_be_visible(timeout=timeout)
+            expect(locator).to_be_visible(timeout=self.expect_timeout)
 
-    def expect_text(self,target:Union[str,Locator],text:str,timeout:int=3000):
+    def expect_text(self,target:Union[str,Locator],text:str):
         """断言元素含指定文本"""
         with allure.step(f"断言{target}元素含指定文本：{text}"):
             logger.info(f"断言{target}元素含指定文本：{text}")
             locator = self._get_locator(target)
-            expect(locator).to_contain_text(text,timeout=timeout)
+            expect(locator).to_contain_text(text,timeout=self.expect_timeout)
 
-    def expect_title_contains(self,title:str,timeout:int=3000):
+    def expect_title_contains(self,title:str):
         """断言页面标题包含指定内容"""
         with allure.step(f"断言页面标题包含指定内容：{title}"):
             logger.info(f"断言页面标题包含指定内容：{title}")
-            expect(self.page).to_have_title(re.compile(title),timeout=timeout)
+            expect(self.page).to_have_title(re.compile(title),timeout=self.expect_timeout)
 
-    def expect_url_contains(self,url:str,timeout:int=3000):
+    def expect_url_contains(self,url:str):
         """断言页面url包含指定内容"""
         with allure.step(f"断言页面url包含指定内容：{url}"):
             logger.info(f"断言页面url包含指定内容：{url}")
             pattern = re.compile(f".*{re.escape(url)}.*")
-            expect(self.page).to_have_url(pattern,timeout=timeout)
+            expect(self.page).to_have_url(pattern,timeout=self.expect_timeout)
 
     def screenshot(self, name: str = "screenshot", full_page: bool = True) -> str:
         """截图并返回截图路径"""

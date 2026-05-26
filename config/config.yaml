@@ -23,3 +23,10 @@ report:
     trace_dir: "reports/traces"
     video_dir: "reports/videos"
     allure_results_dir: "reports/allure-results"
+
+timeout:
+    default: 10000
+    action: 10000
+    navigation: 30000
+    expect: 10000
+    slow: 30000
