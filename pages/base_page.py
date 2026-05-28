@@ -1,10 +1,10 @@
 import re
 from pathlib import Path
 from datetime import datetime
-from typing import Union, Literal
+from typing import Union, Literal, Callable
 
 import allure
-from playwright.sync_api import Page,expect,Locator
+from playwright.sync_api import Page,expect,Locator,BrowserContext
 
 from common.logger import logger
 
@@ -119,4 +119,67 @@ class BasePage:
             logger.info(f"等待页面加载状态：{status}")
             self.page.wait_for_load_state(state=status,timeout=timeout)
 
+    def expect_new_page_by_context(self,context:BrowserContext,action: Callable[[], None],wait_until:str="load"):
+        """
+        通过context等待新页面打开
+        :param context:
+        :param action:
+        :param wait_until:
+        :return:
+        """
+        with allure.step(f"通过context等待新页面打开,打开新页面前的操作为{action}"):
+            logger.info(f"通过context等待新页面打开,打开新页面前的操作为{action}")
+            with context.expect_page() as new_page_info:
+                action()
+            new_page = new_page_info.value
+            new_page.wait_for_load_state(wait_until)
+            return new_page
 
+    def expect_popup_by_page(
+            self,
+            action: Callable[[], None],
+            wait_until: str = "load",
+    ) -> Page:
+        """
+        执行某个动作，并等待当前 page 打开 popup。
+        """
+        with allure.step(f"执行某个动作，并等待当前 page 打开 popup,打开 popup前的操作为{action}"):
+            logger.info(f"执行某个动作，并等待当前 page 打开 popup,打开 popup前的操作为{action}")
+            with self.page.expect_popup() as popup_info:
+                action()
+            popup = popup_info.value
+            popup.wait_for_load_state(wait_until)
+            return popup
+
+
+
+    def expect_popup_by_context(
+            self,
+            context: BrowserContext,
+            action: Callable[[], None],
+            wait_until: str = "load",
+    ) -> Page:
+        """
+        执行某个动作，并等待当前 context 创建的 popup。
+        """
+        with allure.step(f"执行某个动作，并等待当前 context 创建的 popup,打开 popup前的操作为{action}"):
+            logger.info(f"执行某个动作，并等待当前 context 创建的 popup,打开 popup前的操作为{action}")
+        self.page.locator("").select_option(["value1","value2"])
+        expect(self.page.locator()).to_have_values(["value1","value2"])
+        self.page.locator().select_option(["value1","value2"])
+        expect(self.page.locator()).to_have_values()
+        self.page.clock.set_fixed_time()
+        self.page.clock.install()
+        self.page.clock.pause_at()
+        self.page.clock.fast_forward()
+        self.page.clock.resume()
+        self.page.clock.run_for()
+        def handle_dialog(dialog):
+            if dialog.type == "alert":
+                dialog.accept()
+            elif dialog.type == "confirm":
+                dialog.accept()
+            elif dialog.type == "prompt":
+                dialog.accept("")
+        self.page.on("dialog", handle_dialog)
+        self.page.close(run_before_unload=True)

@@ -14,7 +14,7 @@ def set_playwright_timeout(context, timeout_config):
 
 
 @pytest.fixture(scope="session")
-def browser_context_args(browser_context_args, get_context_config, auth_state_file):
+def browser_context_args(browser_context_args, get_context_config, auth_state_file,runtime_base_url):
     """
     修改 playwright 默认浏览器上下文配置，并注入登录态。
     """
@@ -23,10 +23,11 @@ def browser_context_args(browser_context_args, get_context_config, auth_state_fi
     ignore_https_errors = get_context_config.get("ignore_https_errors")
     return {
         **browser_context_args,
+        "base_url": runtime_base_url,
         "viewport": {
             "width": viewport.get("width"),
             "height": viewport.get("height"),
         },
         "ignore_https_errors": ignore_https_errors,
-        "storage_state": auth_state_file,
+        "storage_state": auth_state_file
     }

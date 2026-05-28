@@ -15,7 +15,7 @@ class LoginPage(BasePage):
         self.validate_code_selector = page.get_by_role("textbox", name="验证码")
         self.login_button_selector = page.get_by_role("button", name="登录")
 
-    def open_login_page(self,base_url:str):
+    def open_login_page(self,base_url:str="/admin/#/login"):
         self.open(base_url)
         self.wait_for_page_status(status="load",timeout=60000)
         self.expect_text(self.login_page_title_selector,"L-mall4后台")
@@ -25,5 +25,7 @@ class LoginPage(BasePage):
         self.fill(self.password_selector,password)
         self.fill(self.validate_code_selector,validate_code)
         self.click(self.login_button_selector)
+
+
 
 

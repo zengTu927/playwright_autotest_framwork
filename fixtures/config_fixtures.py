@@ -42,6 +42,9 @@ def env(config, request):
     return current_env
 
 
+
+
+
 @pytest.fixture(scope="session")
 def env_config(config, env):
     """获取当前环境配置"""
@@ -55,20 +58,28 @@ def env_config(config, env):
 
 
 @pytest.fixture(scope="session")
-def base_url(env_config):
-    """获取当前环境 base_url"""
-    current_base_url = env_config.get("base_url")
+def runtime_base_url(env_config):
+    """
+    获取运行时的env，判断使用test环境还是prod环境的url
+    :param env:
+    :return:
+    """
+    base_url = env_config.get("base_url")
 
-    if not current_base_url:
+    if not base_url:
         raise ValueError("当前环境配置中缺少 base_url")
 
-    logger.info(f"当前环境 base_url 为：{current_base_url}")
-    return current_base_url
+    base_url = base_url.rstrip("/")
+    logger.info(f"当前运行 base_url 为：{base_url}")
+
+    return base_url
+
+
 
 
 @pytest.fixture(scope="session")
 def get_context_config(config):
     """获取浏览器配置"""
-    current_browser_config = config.get("browser", {})
+    current_browser_config = config.get("context", {})
     logger.info(f"浏览器配置为：{current_browser_config}")
     return current_browser_config

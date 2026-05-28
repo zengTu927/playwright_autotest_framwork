@@ -9,7 +9,7 @@ from pages.login_page import LoginPage
 
 
 @pytest.fixture(scope="session")
-def auth_state_file(tmp_path_factory, worker_id, browser: Browser, env_config):
+def auth_state_file(tmp_path_factory, worker_id, browser: Browser, env_config,runtime_base_url):
     """
     多进程并行时复用登录态。
     所有 worker 共用同一个 storage_state 文件。
@@ -24,6 +24,7 @@ def auth_state_file(tmp_path_factory, worker_id, browser: Browser, env_config):
     with FileLock(str(lock_path)):
         if not state_path.exists():
             context = browser.new_context(
+                base_url = runtime_base_url,
                 viewport={"width": 1920, "height": 1080},
                 ignore_https_errors=True,
             )
@@ -31,7 +32,7 @@ def auth_state_file(tmp_path_factory, worker_id, browser: Browser, env_config):
             page = context.new_page()
 
             login_page = LoginPage(page)
-            login_page.open_login_page(env_config["base_url"])
+            login_page.open_login_page("/admin/#/login")
             login_page.login(
                 env_config["username"],
                 env_config["password"],

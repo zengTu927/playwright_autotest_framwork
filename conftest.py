@@ -5,7 +5,9 @@ pytest_plugins = [
     "fixtures.auth_fixtures",
     "fixtures.artifact_fixtures",
     "fixtures.page_fixtures",
+    "fixtures.listen_fixtures",
     "hooks.report_hooks",
     "hooks.session_hooks",
+
 ]
 

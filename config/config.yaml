@@ -1,12 +1,12 @@
 env: test
 test:
-    base_url: "http://mall.lemonban.com/admin/#/login"
+    base_url: "http://mall.lemonban.com"
     username: "test123"
     password: "123456"
     validate_code: "lemon"
 
 prod:
-    base_url: "https://tool.liumingye.cn/"
+    base_url: "https://tool.liumingye.cn"
     username: "test123"
     password: "123456"
 
